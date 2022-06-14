@@ -69,7 +69,6 @@ void register_gpu_reduction_operators(legate::LibraryContext& context)
 {
   REGISTER_REDOPS(ArgmaxReduction);
   REGISTER_REDOPS(ArgminReduction);
-  REGISTER_REDOPS(QuantileReduction);
 }
 
 }  // namespace cunumeric
