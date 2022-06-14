@@ -23,26 +23,12 @@ namespace cunumeric {
 template <typename T>
 class QuantileReduction {
  public:
-  // follow UnaryRedCode::MIN, MinReduction blueprint;
-  //
-  using LHS = T;  // Argval<T>;
-  using RHS = T;  // Argval<T>;
-
-  // PROBLEM:
-  //
-  // static const Argval<T> identity;
-  //  error: scalar_unary_red.cc:72:33: error: cannot convert ‘cunumeric::Argval<bool>’
-  //  to ‘cunumeric::UnaryRedOp<cunumeric::UnaryRedCode::QUANTILE, BOOL_LT>::VAL&’ {aka
-  //  ‘bool&’}
+  using LHS = T;
+  using RHS = T;
 
   static const T identity;
-  //  error: scalar_unary_red.cc:72:52: error: no matching function for call to
-  //  ‘cunumeric::UnaryRedOp<cunumeric::UnaryRedCode::QUANTILE, BOOL_LT>::convert(Realm::Point<2,
-  //  long long int>&, Legion::Point<2, long long int>&, const bool&)’
-  //    72 |         OP::template fold<true>(result, OP::convert(p, shape, inptr[idx]));
-  //       |                                         ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
 
-  static const int32_t REDOP_ID = 10111;  // some rnd nbr. for now...
+  /// static const int32_t REDOP_ID = 10111;  // FIXME; some rnd nbr. for now...
   //   CUNUMERIC_ARGMIN_REDOP * MAX_TYPE_NUMBER + legate::legate_type_code_of<T>;
 
   template <bool EXCLUSIVE>
