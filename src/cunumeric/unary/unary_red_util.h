@@ -20,6 +20,8 @@
 #include "cunumeric/arg.h"
 #include "cunumeric/arg.inl"
 
+#include "quant_red.h"
+
 namespace cunumeric {
 
 enum class UnaryRedCode : int {
@@ -32,6 +34,7 @@ enum class UnaryRedCode : int {
   MAX           = CUNUMERIC_RED_MAX,
   MIN           = CUNUMERIC_RED_MIN,
   PROD          = CUNUMERIC_RED_PROD,
+  QUANTILE      = CUNUMERIC_RED_QUANTILE,
   SUM           = CUNUMERIC_RED_SUM,
 };
 
@@ -43,6 +46,9 @@ struct is_arg_reduce<UnaryRedCode::ARGMAX> : std::true_type {
 };
 template <>
 struct is_arg_reduce<UnaryRedCode::ARGMIN> : std::true_type {
+};
+template <>
+struct is_arg_reduce<UnaryRedCode::QUANTILE> : std::true_type {
 };
 
 template <typename Functor, typename... Fnargs>
@@ -67,6 +73,8 @@ constexpr decltype(auto) op_dispatch(UnaryRedCode op_code, Functor f, Fnargs&&..
       return f.template operator()<UnaryRedCode::MIN>(std::forward<Fnargs>(args)...);
     case UnaryRedCode::PROD:
       return f.template operator()<UnaryRedCode::PROD>(std::forward<Fnargs>(args)...);
+    case UnaryRedCode::QUANTILE:
+      return f.template operator()<UnaryRedCode::QUANTILE>(std::forward<Fnargs>(args)...);
     case UnaryRedCode::SUM:
       return f.template operator()<UnaryRedCode::SUM>(std::forward<Fnargs>(args)...);
     default: break;
@@ -215,6 +223,51 @@ struct UnaryRedOp<UnaryRedCode::PROD, TYPE_CODE> {
     return rhs;
   }
 
+  __CUDA_HD__ static VAL convert(const RHS& rhs) { return rhs; }
+};
+
+template <legate::LegateTypeCode TYPE_CODE>
+struct UnaryRedOp<UnaryRedCode::QUANTILE, TYPE_CODE> {
+  static constexpr bool valid = TYPE_CODE != legate::LegateTypeCode::COMPLEX128_LT;
+
+  // follow UnaryRedCode::MIN, MinReduction blueprint;
+  //
+  using RHS = legate::legate_type_of<TYPE_CODE>;
+  using VAL = RHS;                     // Argval<RHS>;
+  using OP  = QuantileReduction<VAL>;  // trait / dependent type needed!
+  // using OP = Legion::MinReduction<VAL>; // same error as below
+
+  template <bool EXCLUSIVE>
+  __CUDA_HD__ static void fold(VAL& a, VAL b)
+  {
+    OP::template fold<EXCLUSIVE>(a, b);
+    // irrelevant for:
+    //  error: scalar_unary_red.cc:72:52: error: no matching function for call to
+    //  ‘cunumeric::UnaryRedOp<cunumeric::UnaryRedCode::QUANTILE, BOOL_LT>::convert(Realm::Point<2,
+    //  long long int>&, Legion::Point<2, long long int>&, const bool&)’
+  }
+
+  template <int32_t DIM>
+  __CUDA_HD__ static VAL convert(const Legion::Point<DIM>& point,
+                                 int32_t collapsed_dim,
+                                 const RHS& rhs)
+  {
+    return rhs;  // VAL(point[collapsed_dim], rhs);
+  }
+
+  // template <int32_t DIM>
+  // __CUDA_HD__ static VAL convert(const Legion::Point<DIM>& point,
+  //                                const Legion::Point<DIM>& shape,
+  //                                const RHS& rhs)
+  // {
+  //   int64_t idx = 0;
+  //   for (int32_t dim = 0; dim < DIM; ++dim) idx = idx * shape[dim] + point[dim];
+  //   return VAL(idx, rhs);
+
+  //   // return VAL{0};
+  // }
+
+  // template <typename U>
   __CUDA_HD__ static VAL convert(const RHS& rhs) { return rhs; }
 };
 

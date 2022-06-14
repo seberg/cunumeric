@@ -186,6 +186,7 @@ class UnaryRedCode(IntEnum):
     MAX = _cunumeric.CUNUMERIC_RED_MAX
     MIN = _cunumeric.CUNUMERIC_RED_MIN
     PROD = _cunumeric.CUNUMERIC_RED_PROD
+    QUANTILE = _cunumeric.CUNUMERIC_RED_QUANTILE
     SUM = _cunumeric.CUNUMERIC_RED_SUM
 
 
