@@ -21,6 +21,7 @@ GEN_CPU_SRC += cunumeric/ternary/where.cc               \
 							 cunumeric/unary/scalar_unary_red.cc      \
 							 cunumeric/unary/unary_op.cc              \
 							 cunumeric/unary/unary_red.cc             \
+               cunumeric/unary/quant_red.cc             \
 							 cunumeric/unary/convert.cc               \
 							 cunumeric/nullary/arange.cc              \
 							 cunumeric/nullary/eye.cc                 \
