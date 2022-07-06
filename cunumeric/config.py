@@ -272,6 +272,7 @@ class CuNumericOpCode(IntEnum):
     MATVECMUL = _cunumeric.CUNUMERIC_MATVECMUL
     NONZERO = _cunumeric.CUNUMERIC_NONZERO
     POTRF = _cunumeric.CUNUMERIC_POTRF
+    QUANTILE = _cunumeric.CUNUMERIC_QUANTILE
     RAND = _cunumeric.CUNUMERIC_RAND
     READ = _cunumeric.CUNUMERIC_READ
     REPEAT = _cunumeric.CUNUMERIC_REPEAT
