@@ -16,6 +16,32 @@
 
 #pragma once
 
+#include "cunumeric/cunumeric.h"
+#include "cunumeric/quantile/quantile_op_util.h"
+
+namespace cunumeric {
+
+struct QuantileOpArgs {
+  const Array& in1;
+  // const Array& out;   // FIXME: specify output format
+  QuantileOpCode op_code;
+  std::vector<legate::Store> args;
+};
+
+class QuantileOpTask : public CuNumericTask<QuantileOpTask> {
+ public:
+  static const int TASK_ID = CUNUMERIC_QUANTILE;
+
+ public:
+  static void cpu_variant(legate::TaskContext& context);
+#ifdef LEGATE_USE_OPENMP
+  static void omp_variant(legate::TaskContext& context);
+#endif
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& context);
+#endif
+};
+
 template <typename index_t = int32_t, typename real_t = double>
 struct Quantile {
   __host__ __device__ Quantile(real_t gamma_l  = 0.0,
@@ -119,3 +145,5 @@ struct Quantile {
 
   real_t eps_{1e-16};
 };
+
+}  // namespace cunumeric
