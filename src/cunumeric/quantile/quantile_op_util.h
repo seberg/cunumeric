@@ -39,6 +39,37 @@ template <typename Functor, typename... Fnargs>
 constexpr decltype(auto) op_dispatch(QuantileOpCode op_code, Functor f, Fnargs&&... args)
 {
   switch (op_code) {
+    case QuantileOpCode::INVERTED_CDF:
+      return f.template operator()<QuantileOpCode::INVERTED_CDF>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::AVG_INVERTED_CDF:
+      return f.template operator()<QuantileOpCode::AVG_INVERTED_CDF>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::CLOSEST_OBS:
+      return f.template operator()<QuantileOpCode::CLOSEST_OBS>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::INTRP_INVERTED_CDF:
+      return f.template operator()<QuantileOpCode::INTRP_INVERTED_CDF>(
+        std::forward<Fnargs>(args)...);
+    case QuantileOpCode::HAZEN:
+      return f.template operator()<QuantileOpCode::HAZEN>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::WEIBULL:
+      return f.template operator()<QuantileOpCode::WEIBULL>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::LINEAR_INTRP:
+      return f.template operator()<QuantileOpCode::LINEAR_INTRP>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::MEDIAN_UNBIASED:
+      return f.template operator()<QuantileOpCode::MEDIAN_UNBIASED>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::NORMAL_UNBIASED:
+      return f.template operator()<QuantileOpCode::NORMAL_UNBIASED>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::LOWER_POINT:
+      return f.template operator()<QuantileOpCode::LOWER_POINT>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::HIGHER_POINT:
+      return f.template operator()<QuantileOpCode::HIGHER_POINT>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::MID_POINT:
+      return f.template operator()<QuantileOpCode::MID_POINT>(std::forward<Fnargs>(args)...);
+    case QuantileOpCode::NEAREST_POINT:
+      return f.template operator()<QuantileOpCode::NEAREST_POINT>(std::forward<Fnargs>(args)...);
   }
+  assert(false);
+  // FIXME: throw ...; // instead...
+
+  return f.template operator()<QuantileOpCode::INVERTED_CDF>(std::forward<Fnargs>(args)...);
 }
 }  // namespace cunumeric
