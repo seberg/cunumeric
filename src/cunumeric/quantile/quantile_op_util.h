@@ -72,4 +72,152 @@ constexpr decltype(auto) op_dispatch(QuantileOpCode op_code, Functor f, Fnargs&&
 
   return f.template operator()<QuantileOpCode::INVERTED_CDF>(std::forward<Fnargs>(args)...);
 }
+
+template <QuantileOpCode OP_CODE, legate::LegateTypeCode CODE>
+struct QuantileOp {
+  static constexpr bool valid = false;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::INVERTED_CDF, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::AVG_INVERTED_CDF, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::CLOSEST_OBS, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::INTRP_INVERTED_CDF, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::HAZEN, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::WEIBULL, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::LINEAR_INTRP, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::MEDIAN_UNBIASED, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::NORMAL_UNBIASED, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::LOWER_POINT, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::HIGHER_POINT, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::MID_POINT, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
+template <legate::LegateTypeCode CODE>
+struct QuantileOp<QuantileOpCode::NEAREST_POINT, CODE> {
+  using T = floating_type_of<CODE>::value_type;
+
+  static constexpr bool valid = true;
+
+  QuantileOp(const std::vector<legate::Store>& args) {}
+
+  constexpr decltype(auto) operator()(const T& q) const;
+};
+
 }  // namespace cunumeric
