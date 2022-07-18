@@ -22,7 +22,7 @@
 namespace cunumeric {
 
 struct QuantileOpArgs {
-  const Array& in1;
+  const Array& in;
   // const Array& out;   // FIXME: specify output format
   QuantileOpCode op_code;
   std::vector<legate::Store> args;
