@@ -19,11 +19,35 @@
 #include "cunumeric/cunumeric.h"
 #include "cunumeric/quantile/quantile_op_util.h"
 
+#ifdef _IMPL_ATTEMPT_
+
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+#include <thrust/tuple.h>
+#include <thrust/execution_policy.h>
+#include <thrust/system/cuda/execution_policy.h>
+#include <thrust/copy.h>
+#include <thrust/sort.h>
+#include <thrust/sequence.h>
+#include <thrust/iterator/counting_iterator.h>
+#include <thrust/iterator/zip_iterator.h>
+//
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <iterator>
+#include <fstream>
+#include <string>
+
+#endif
+
 namespace cunumeric {
 
 struct QuantileOpArgs {
   const Array& in;
-  // const Array& out;   // FIXME: specify output format
+  const Array& out;
   QuantileOpCode op_code;
   std::vector<legate::Store> args;
 };
@@ -42,17 +66,19 @@ class QuantileOpTask : public CuNumericTask<QuantileOpTask> {
 #endif
 };
 
+#ifdef _IMPL_ATTEMPT_
+
 template <typename index_t = int32_t, typename real_t = double>
 struct Quantile {
-  __host__ __device__ Quantile(real_t gamma_l  = 0.0,
-                               real_t gamma_r  = 1.0,
-                               real_t f1       = 0.0,
-                               real_t f2       = 0.0,
-                               index_t j_decr  = 0,
-                               real_t pos_h    = 0.0,
-                               bool continuous = false,
-                               bool null_0     = false,
-                               bool nearest    = false)
+  __CUDA_HD__ Quantile(real_t gamma_l  = 0.0,
+                       real_t gamma_r  = 1.0,
+                       real_t f1       = 0.0,
+                       real_t f2       = 0.0,
+                       index_t j_decr  = 0,
+                       real_t pos_h    = 0.0,
+                       bool continuous = false,
+                       bool null_0     = false,
+                       bool nearest    = false)
     : gamma_l_(gamma_l),
       gamma_r_(gamma_r),
       f1_(f1),
@@ -65,12 +91,12 @@ struct Quantile {
   {
   }
 
-  //__host__ __device__ qualified cannot be default;
+  //__CUDA_HD__ qualified cannot be default;
   //
-  //__host__ __device__ Quantile(Quantile const& ) = default;
-  //__host__ __device__ Quantile& operator = (Quantile const& ) = default;
+  //__CUDA_HD__ Quantile(Quantile const& ) = default;
+  //__CUDA_HD__ Quantile& operator = (Quantile const& ) = default;
 
-  __host__ __device__ thrust::tuple<real_t, index_t> gamma_j(real_t q, index_t n) const
+  __CUDA_HD__ thrust::tuple<real_t, index_t> gamma_j(real_t q, index_t n) const
   {
     if (q >= real_t{1.0}) return thrust::make_tuple(real_t{1.0}, n - 2);
 
@@ -108,7 +134,7 @@ struct Quantile {
 
   // assume sorted ptr_d_array1d
   template <typename target_t>
-  __host__ __device__ real_t operator()(target_t const* ptr_d_arr_1ds, real_t q, index_t n) const
+  __CUDA_HD__ real_t operator()(target_t const* ptr_d_arr_1ds, real_t q, index_t n) const
   {
     auto&& tpl = gamma_j(q, n);  // structural bindings don't work with thrust::tuple, yet
 
@@ -145,5 +171,6 @@ struct Quantile {
 
   real_t eps_{1e-16};
 };
+#endif
 
 }  // namespace cunumeric

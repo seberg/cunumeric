@@ -40,7 +40,7 @@ struct QuantileOpImpl {
     using OP  = QuantileOp<OP_CODE, CODE>;
     using RHS = legate_type_of<CODE>;
 
-    using LHS = std::result_of_t<OP(RHS)>;
+    using RET = typename OP::RetT;
 
     auto rect = args.out.shape<DIM>();
 
@@ -49,7 +49,7 @@ struct QuantileOpImpl {
 
     if (volume == 0) return;
 
-    auto out = args.out.write_accessor<LHS, DIM>(rect);
+    auto out = args.out.write_accessor<RET, DIM>(rect);
     auto in  = args.in.read_accessor<RHS, DIM>(rect);
 
 #ifndef LEGION_BOUNDS_CHECKS
@@ -90,11 +90,12 @@ static void quantile_op_template(TaskContext& context)
   auto& outputs = context.outputs();
   auto& scalars = context.scalars();
 
+  auto op_code = scalars[0].value<QuantileOpCode>();
+
   std::vector<Store> extra_args;
   for (size_t idx = 2; idx < inputs.size(); ++idx) extra_args.push_back(std::move(inputs[idx]));
 
-  QuantileOpArgs args{
-    inputs[0], inputs[1], outputs[0], scalars[0].value<QuantileOpCode>(), std::move(extra_args)};
+  QuantileOpArgs args{inputs[0], outputs[0], op_code, std::move(extra_args)};
   op_dispatch(args.op_code, QuantileOpDispatch<KIND>{}, args);
 }
 
